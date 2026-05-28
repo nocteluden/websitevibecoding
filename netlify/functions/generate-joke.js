@@ -4,47 +4,30 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const formats = [
-  "a cute fake prophecy",
-  "a tiny compliment with a punchline",
-  "a playful fortune",
-  "a mini award title",
-  "a dramatic one-line announcement",
-  "a soft roast that is still clearly affectionate",
-  "a cute fake notification",
-  "a whimsical observation"
-];
-
-const focuses = [
-  "bubble tea",
-  "Rome",
-  "Berkeley",
-  "poetry",
-  "Greek mythology",
-  "career ambition",
-  "English major energy",
-  "too many possible majors",
-  "future rich life",
-  "San Francisco"
-];
-
-export async function handler() {
+export async function handler(event) {
   try {
     if (!process.env.OPENAI_API_KEY) {
       return json({ message: "Missing OPENAI_API_KEY in Netlify." }, 500);
     }
 
-    const format = randomItem(formats);
-    const focus = randomItem(focuses);
+    let previousMessages = [];
+
+    if (event.body) {
+      const body = JSON.parse(event.body);
+      previousMessages = Array.isArray(body.previousMessages)
+        ? body.previousMessages.slice(-10)
+        : [];
+    }
+
+    const lastMessage = previousMessages.length
+      ? previousMessages[previousMessages.length - 1]
+      : "None yet.";
 
     const response = await client.responses.create({
       model: "gpt-4o-mini",
-      temperature: 1.25,
+      temperature: 1.15,
       input: `Write one cute, playful, personalized message for Sophia.
-
-It should be ${format}.
-Main focus: ${focus}.
-
+      
 Hidden background facts you may use quietly:
 - Sophia likes Heytea bubble tea.
 - Sophia is from San Francisco.
@@ -65,17 +48,23 @@ Hidden background facts you may use quietly:
 - Sophia can often be disorganized, but she tries her best to use calendars and plan things out.
 - Sophia wants to be a writer one day.
 
+Previous messages already shown:
+${previousMessages.length ? previousMessages.map((m, i) => `${i + 1}. ${m}`).join("\n") : "None yet."}
+
+Most recent message:
+${lastMessage}
+
 Rules:
-- Do NOT make it sound like a generic joke.
-- Do NOT list facts.
+- Do not repeat the topic, wording pattern, or punchline of the most recent message.
+- Avoid topics that appeared often in the previous messages.
 - Use only 1 or 2 background facts.
 - Make it cute, specific, and fun.
-- 10 to 22 words.
+- It should feel like a tiny personalized fortune, compliment, or playful observation, not a forced joke.
+- 10 to 24 words.
 - One sentence only.
 - No offensive jokes.
 - No jokes about ethnicity, periods, pain, body, height, or family money.
 - Do not explain anything.
-- Avoid overusing the word "Berkeley."
 - Avoid the structure "Sophia is the kind of person who..."
 `
     });
@@ -85,14 +74,11 @@ Rules:
     return json({ message });
   } catch (error) {
     console.error("Function error:", error);
+
     return json({
       message: `Error: ${error.message || "unknown function error"}`
     }, 500);
   }
-}
-
-function randomItem(list) {
-  return list[Math.floor(Math.random() * list.length)];
 }
 
 function json(data, statusCode = 200) {
