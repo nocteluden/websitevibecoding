@@ -48,13 +48,22 @@ Main focus: ${focus}.
 Hidden background facts you may use quietly:
 - Sophia likes Heytea bubble tea.
 - Sophia is from San Francisco.
-- Sophia goes to Berkeley.
+- Sophia goes to UC Berkeley.
 - Sophia is currently in Rome.
 - Sophia likes poetry.
 - Sophia likes Greek mythology.
 - Sophia is considering English, economics, astronomy, psychology, or multiple majors.
-- Sophia may become a lawyer or consultant.
-- Sophia wants a successful, rich future.
+- Sophia wants to become a lawyer or consultant.
+- Sophia wants a to be rich and MARRY RICH.
+- Sophia may go on dates with men from Hinge from London who are overly eager.
+- Sophia's mother is very career-oriented.
+- Sophia had a terrible fat roommate this past spring semester and they had conflicts.
+- Sophia wishes to travel the world in the future.
+- Sophia likes to use the word "chud". 
+- Sophia hates the dining halls on campus (Crossroads is one, Cafe 3 is another). 
+- Sophia has very strong toes/feet. 
+- Sophia can often be disorganized, but she tries her best to use calendars and plan things out.
+- Sophia wants to be a writer one day.
 
 Rules:
 - Do NOT make it sound like a generic joke.
