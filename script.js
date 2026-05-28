@@ -1,31 +1,50 @@
-const button = document.getElementById("jokeButton");
-const jokeBox = document.getElementById("jokeBox");
+const button = document.getElementById("generateButton");
+const outputBox = document.getElementById("outputBox");
 
-button.addEventListener("click", generateJoke);
+const loadingLines = [
+  "Consulting the stars...",
+  "Steeping the boba...",
+  "Asking a tiny oracle...",
+  "Gathering dramatic evidence...",
+  "Reading the vibes..."
+];
 
-async function generateJoke() {
-  jokeBox.textContent = "Thinking...";
+button.addEventListener("click", generateSurprise);
+
+async function generateSurprise() {
   button.disabled = true;
+  outputBox.classList.add("loading");
+  outputBox.classList.remove("pop");
+  outputBox.textContent = randomItem(loadingLines);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const response = await fetch("/.netlify/functions/generate-joke");
+    const response = await fetch("/.netlify/functions/generate-joke", {
+      signal: controller.signal
+    });
+
     const text = await response.text();
+    const data = JSON.parse(text);
 
-    console.log("Raw response:", text);
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      jokeBox.textContent = "The function did not return JSON. Check Netlify function logs.";
-      return;
-    }
-
-    jokeBox.textContent = data.joke || "No joke came back from the AI.";
+    outputBox.classList.remove("loading");
+    outputBox.classList.add("pop");
+    outputBox.textContent = data.message || "The universe got shy. Try again.";
   } catch (error) {
-    jokeBox.textContent = `Website error: ${error.message}`;
+    outputBox.classList.remove("loading");
+
+    if (error.name === "AbortError") {
+      outputBox.textContent = "The universe took too long. Try again.";
+    } else {
+      outputBox.textContent = "Something broke, but in a cute way.";
+    }
   } finally {
+    clearTimeout(timeout);
     button.disabled = false;
   }
+}
+
+function randomItem(list) {
+  return list[Math.floor(Math.random() * list.length)];
 }
